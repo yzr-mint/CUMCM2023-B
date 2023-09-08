@@ -131,6 +131,32 @@ def get_sample_points(a, b, xl, xr, yl, yr):
                 result.append((x, int(floor(y))))
     return result
 
+
+# 对ax+by+1=0在[xl, xh) x [yl, yr)里采样准确点
+def get_real_points(a, b, xl, xr, yl, yr):
+    result = []
+    if a == 0:
+        y = (1) / (-b)
+        if yl <= y and y < yr:
+            for x in range(xl, xr):
+                result.append((x, y))
+    elif b == 0:
+        x = (1) / (-a)
+        if xl <= x and x < xr:
+            for y in range(yl, yr):
+                result.append((x, y))
+    elif abs(a) >= abs(b):
+        for y in range(yl, yr):
+            x = (b * y + 1) / (-a)
+            if xl <= x and x < xr:
+                result.append((x, y))
+    else:
+        for x in range(xl, xr):
+            y = (a * x + 1) / (-b)
+            if yl <= y and y < yr:
+                result.append((x, y))
+    return result
+
 # 寻找[points]中被ax+by+1=0探测到的点
 def get_detected_points(points, a, b):
     result = set()
@@ -149,3 +175,32 @@ def get_origin_param(a, b, unit = UNIT):
     return a / unit, b / unit
 
 
+# 返回重叠率（相对于前一条线）
+def get_eta(points, lines, xsize, ysize):
+    etas = []
+    for i, (Aa, Ab) in enumerate(lines[1:]):
+        # get dots on the line
+        dots = get_real_points(Aa, Ab, 0, xsize, 0, ysize)
+        eta_in_A = []
+        Ba, Bb = lines[i]
+        A_dots = get_detected_points(points, Aa, Ab)
+        B_dots = get_detected_points(points, Ba, Bb)
+        for (x, y) in dots:
+            # get points on the grid inside dot detection range
+            la, lb = -Ab / (Ab * x - Aa * y), Aa / (Ab * x - Aa * y)
+            line_dots = get_sample_points(la, lb, 0, xsize, 0, ysize)
+            overlap = set(A_dots) & set(B_dots) & set(line_dots)
+            if len(overlap): # eta > 0
+                eta_in_A.append(len(overlap) / len(set(A_dots) & set(line_dots)))
+            else:            # eta < 0
+                selected_point_in_B = (set(B_dots) & set(line_dots))[0]
+                temp_line = get_sample_points(la, lb, 
+                                              min(selected_point_in_B[0], x), 
+                                              max(selected_point_in_B[0], x), 
+                                              min(selected_point_in_B[1], y), 
+                                              max(selected_point_in_B[1], y), )
+                points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
+                eta_in_A.append(-len(points_not_overlap) / len(set(A_dots) & set(line_dots)))
+        etas.append(eta_in_A)
+    return etas
+            
