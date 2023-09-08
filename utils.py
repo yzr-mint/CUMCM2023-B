@@ -175,7 +175,7 @@ def get_origin_param(a, b, unit = UNIT):
 
 # 返回重叠率（相对于前一条线）
 def get_eta(points, lines, xsize, ysize):
-    etas = []
+    etas = [0]
     for i, (Aa, Ab) in enumerate(lines[1:]):
         # get dots on the line
         dots = get_real_points(Aa, Ab, 0, xsize, 0, ysize)
@@ -203,10 +203,10 @@ def get_eta(points, lines, xsize, ysize):
         etas.append(eta_in_A)
     return etas
 
-# 第四问读取表格，返回点集合的字典，xsize，ysize
+# 第四问读取表格，返回点集合(已经除以unit)
 def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60), 
                          start_x = 3, start_y = 3, 
-                         xsize = 200, ysize = 250):
+                         xsize = 200, ysize = 250, unit = UNIT):
     workbook = openpyxl.load_workbook(filename)
     worksheet = workbook.active
 
@@ -214,10 +214,26 @@ def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60
     for i in range(xsize):
         rows = []
         for j in range(ysize):
-            rows.append(worksheet.cell(row = j + start_y, column = i + start_x).value)
-        # print(rows)
+            rows.append(worksheet.cell(row = j + start_y, column = i + start_x).value / unit)
         depths.append(rows)
 
-    return depth_to_point_dic(depths, theta)
+    return depths
 
-    
+# 返回斜率
+def get_k(a, b):
+    return - a / b
+
+# 返回加权和
+def weight_sum(lst):
+    size = len(lst)
+    weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
+    result = sum(lst * weights)
+    return result
+
+# 得到沿着x轴方向（即东西方向）的线与所提供直线的交点坐标
+def get_point_with_x(a, b, fix_x):
+    return fix_x, (-1 - a * fix_x) / b
+
+# 得到沿着y轴方向（即南北方向）的线与所提供直线的交点坐标
+def get_point_with_y(a, b, fix_y):
+    return (-1 - b * fix_y), fix_y
