@@ -35,6 +35,7 @@ def diminished_angle(th):
 def normalize(x1, y1, x2, y2):
     return (y2-y1)/(x2*y1-x1*y2), (x1-x2)/(x2*y1-x1*y2)
 
+
 # 海底点的类
 class point:
     def __init__(self, x, y, z, theta):
@@ -47,8 +48,42 @@ class point:
     def detected(self, a, b):
         return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 1) ** 2
 
+def get_depths(length, width, center_depth, alpha, unit = 37.04):
+    """
+    return a list of depths, depths[x][y] means depth of (x, y)
+    """
+    depths = []
+    # calculate the (0, 0) depth via center_depth
+    o_depth = center_depth + dh(length / 2, alpha, 0)
+
+    x_size = int(haili_to_meter(length) / unit + 1)
+    y_size = int(haili_to_meter(width) / unit + 1)
+
+    for x in range(x_size):
+        depths.append([o_depth - dh(x * unit, alpha, 0) for _ in range(y_size)])
+
+    return depths
 
 
+def gridding(length, width, depths, theta, unit = 37.04):
+    """
+    return a points list
 
+    Parameters
+    ----------
+    - length: haili, the length of the ocean
+    - width: haili, the width of the ocean
+    - depths: a list of depths(2 dimensions)
+    - theta: half of the detecting angle
+    - unit: 1852 * 0.02 = 37.04
+    """
+    points = []
+    x_size = int(haili_to_meter(length) / unit + 1)
+    y_size = int(haili_to_meter(width) / unit + 1)
 
+    for x in range(x_size):
+        for y in range(y_size):
+            points.append({(x, y): point(x, y, depths[x][y] / unit, theta)})
+
+    return points
 
