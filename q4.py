@@ -1,43 +1,5 @@
 from utils import *
-
-def initialize(guide, depths, theta):
-    # result格式为[(a,b)] (一堆线)
-    result = []
-
-    xl = 0
-    yl = 0
-    points_dic, xr, yr = depth_to_point_dic(depths, theta)
-    sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
-    undetected_point_index = 0
-    choose_point_index = 0
-
-    while(1):
-        # 找下一个测线经过的点
-        undetected_points = sample_points[undetected_point_index]
-        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1]) == False):
-            choose_point_index += 1
-        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1])):
-            choose_point_index += 1
-            if(choose_point_index == len(sample_points)):
-                choose_point_index -= 1
-                a, b = get_orth(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
-                result.append((a, b))
-                return result
-
-        choose_point_index -= 1
-        a, b = get_orth(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
-        result.append((a, b))
-
-        # 找下一个无法被探测的点
-        while(undetected_point.detected_by(a, b) == False):
-            undetected_point_index += 1
-            undetected_point = points_dic[sample_points[undetected_point_index]]
-        while(undetected_point.detected_by(a, b)):
-            undetected_point_index += 1
-            if undetected_point_index == len(sample_points):
-                return result
-            undetected_point = points_dic[sample_points[undetected_point_index]]
-
+from q3_1 import *
 
 def iteration(points, lines, xsize, ysize, theta, theta_prime):
     etas = get_eta(points, lines, xsize, ysize)
@@ -83,7 +45,7 @@ def iteration(points, lines, xsize, ysize, theta, theta_prime):
 
 theta = degrees_to_radians(60.0)
 theta_prime = diminished_angle(theta)
-guide = (0, -1)
+guide = (7, -1)
 xsize = 200
 ysize = 250
 
@@ -92,7 +54,7 @@ points = depth_to_point_set(depths, theta)
 depths = depth_to_numpy(depths)
 # depths = interpolate(depths, 4)
 
-lines = initialize(guide, depths, theta_prime)
+lines = get_lines(guide, depths, theta_prime)
 
 epoch = 20
 
