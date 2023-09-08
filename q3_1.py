@@ -21,7 +21,6 @@ def sample_dots(a, b, xl, xh, yl, yh):
             if yl <= y and y < yh:
                 result.append((x, floor(y)))
     return result
-    
 
 # 寻找[points]中被ax+by+1=0探测到的点
 def detected_points(points, a, b):
