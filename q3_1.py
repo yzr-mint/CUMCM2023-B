@@ -39,7 +39,6 @@ while(sign):
             sign = 0
             break
         undetected_point = points_dic[sample_points[undetected_point_index]]
-    undetected_point_index -= 1
 
 print(result)
 
