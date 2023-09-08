@@ -59,7 +59,7 @@ def get_depths(length, width, center_depth, alpha, unit = 37.04):
     """
     depths = []
     # calculate the (0, 0) depth via center_depth
-    o_depth = center_depth + dh(length / 2, alpha, 0)
+    o_depth = center_depth + dh(haili_to_meter(length) / 2, alpha, 0)
 
     x_size = int(haili_to_meter(length) / unit + 1)
     y_size = int(haili_to_meter(width) / unit + 1)
