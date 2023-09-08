@@ -36,8 +36,6 @@ def normalize(x1, y1, x2, y2):
     return (y2-y1)/(x2*y1-x1*y2), (x1-x2)/(x2*y1-x1*y2)
 
 
-
-
 # 海底点的类
 class point:
     def __init__(self, x, y, z, theta):
@@ -85,7 +83,7 @@ def gridding(length, width, depths, theta, unit = 37.04):
 
     for x in range(x_size):
         for y in range(y_size):
-            points.append(point(x, y, depths[x][y] / unit, theta))
+            points.append({(x, y): point(x, y, depths[x][y] / unit, theta)})
 
     return points
 
