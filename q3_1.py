@@ -13,6 +13,7 @@ result = []
 
 xl = 0
 yl = 0
+a = get_depths(4, 2, 110, alpha)
 points_dic, xr, yr = get_points_dic(4, 2, get_depths(4, 2, 110, alpha), thpr, unit = 37.04)
 
 sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
