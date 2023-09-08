@@ -172,5 +172,6 @@ def get_orth(a, b, x0, y0):
     c = -a * x0 - b * y0
     return a / c, b / c
 
+# 将放缩之后的直线的方程转化为原来以米为单位的讨论上
 def get_origin_param(a, b, unit = UNIT): 
     return a / unit, b / unit
