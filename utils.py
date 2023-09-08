@@ -1,4 +1,5 @@
 from numpy import *
+import openpyxl
 
 UNIT = 37.04
 
@@ -103,9 +104,6 @@ def interpolate(d_matrix, times):
         d_matrix = tmp2 * 2
     return d_matrix
 
-
-    
-
 # 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
@@ -204,4 +202,22 @@ def get_eta(points, lines, xsize, ysize):
                 eta_in_A.append(-len(points_not_overlap) / len(set(A_dots) & set(line_dots)))
         etas.append(eta_in_A)
     return etas
-            
+
+# 第四问读取表格，返回点集合的字典，xsize，ysize
+def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60), 
+                         start_x = 3, start_y = 3, 
+                         xsize = 200, ysize = 250):
+    workbook = openpyxl.load_workbook(filename)
+    worksheet = workbook.active
+
+    depths = []
+    for i in range(xsize):
+        rows = []
+        for j in range(ysize):
+            rows.append(worksheet.cell(row = j + start_y, column = i + start_x).value)
+        # print(rows)
+        depths.append(rows)
+
+    return depth_to_point_dic(depths, theta)
+
+    
