@@ -67,72 +67,24 @@ def get_depths(length, width, center_depth, alpha, unit = UNIT):
     y_size = int(haili_to_meter(width) / unit + 1)
 
     for x in range(x_size):
-        depths.append([o_depth - dh(x * unit, alpha, 0) for _ in range(y_size)])
+        depths.append([(o_depth - dh(x * unit, alpha, 0)) / unit for _ in range(y_size)])
 
     return depths
 
-def get_points_set(length, width, depths, theta, unit = UNIT):
-    """
-    return a points list
+def depth_to_point_dic(depth, theta):
+    xsize = len(depth)
+    ysize = len(depth[0])
+    # 假设你已经有了二维数组d和x_size、y_size的值
+    return {(x, y): point(x, y, depth[x][y], theta) for x in range(xsize) for y in range(ysize)}, xsize, ysize
 
-    Parameters
-    ----------
-    - length: haili, the length of the ocean
-    - width: haili, the width of the ocean
-    - depths: a list of depths(2 dimensions)
-    - theta: half of the detecting angle
-    """
-    points = []
-    x_size = int(haili_to_meter(length) / unit + 1)
-    y_size = int(haili_to_meter(width) / unit + 1)
+def depth_to_point_set(depth, theta):
+    xsize = len(depth)
+    ysize = len(depth[0])
+    # 假设你已经有了二维数组d和x_size、y_size的值
+    return {point(x, y, depth[x][y], theta) for x in range(xsize) for y in range(ysize)}
 
-    for x in range(x_size):
-        for y in range(y_size):
-            points.append(point(x, y, depths[x][y] / unit, theta))
-
-    return points, x_size, y_size
-
-def get_points_dic(length, width, depths, theta, unit = UNIT):
-    """
-    return a points list
-
-    Parameters
-    ----------
-    - length: haili, the length of the ocean
-    - width: haili, the width of the ocean
-    - depths: a list of depths(2 dimensions)
-    - theta: half of the detecting angle
-    """
-    points = {}
-    x_size = int(haili_to_meter(length) / unit + 1)
-    y_size = int(haili_to_meter(width) / unit + 1)
-
-    for x in range(x_size):
-        for y in range(y_size):
-            points[(x, y)] = point(x, y, depths[x][y] / unit, theta)
-
-    return points, x_size, y_size
-
-def get_depth_dic(length, width, depths, theta, unit = UNIT):
-    """
-    return a points list
-
-    Parameters
-    ----------
-    - length: haili, the length of the ocean
-    - width: haili, the width of the ocean
-    - depths: a list of depths(2 dimensions)
-    - theta: half of the detecting angle
-    """
-    points = []
-    x_size = int(haili_to_meter(length) / unit + 1)
-    y_size = int(haili_to_meter(width) / unit + 1)
-
-    for x in range(x_size):
-        for y in range(y_size):
-            points.append({(x, y): depths[x][y] / unit})
-
-    return points
+def depth_to_depth_dic(depth):
+    return {dep for i in depth for dep in i}
 
 # 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
@@ -141,22 +93,22 @@ def get_sample_points(a, b, xl, xr, yl, yr):
         y = (1) / (-b)
         if yl <= y and y < yr:
             for x in range(xl, xr):
-                result.append((x, floor(y)))
+                result.append((x, int(floor(y))))
     elif b == 0:
         x = (1) / (-a)
         if xl <= x and x < xr:
             for y in range(yl, yr):
-                result.append((floor(x), y))
+                result.append((int(floor(x)), y))
     elif abs(a) >= abs(b):
         for y in range(yl, yr):
             x = (b * y + 1) / (-a)
             if xl <= x and x < xr:
-                result.append((floor(x), y))
+                result.append((int(floor(x)), y))
     else:
         for x in range(xl, xr):
             y = (a * x + 1) / (-b)
             if yl <= y and y < yr:
-                result.append((x, floor(y)))
+                result.append((x, int(floor(y))))
     return result
 
 # 寻找[points]中被ax+by+1=0探测到的点
