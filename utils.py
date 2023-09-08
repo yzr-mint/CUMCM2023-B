@@ -193,12 +193,13 @@ def get_eta(points, lines, xsize, ysize):
             if len(overlap): # eta > 0
                 eta_in_A.append(len(overlap) / len(set(A_dots) & set(line_dots)))
             else:            # eta < 0
-                selected_point_in_B = (set(B_dots) & set(line_dots))[0]
+                insect_Bx = (Bb - lb) / (lb * Ba - la * Bb)
+                insect_By = (la - Ba) / (lb * Ba - la * Bb)
                 temp_line = get_sample_points(la, lb, 
-                                              min(selected_point_in_B[0], x), 
-                                              max(selected_point_in_B[0], x), 
-                                              min(selected_point_in_B[1], y), 
-                                              max(selected_point_in_B[1], y), )
+                                              min(insect_Bx, x), 
+                                              max(insect_Bx, x), 
+                                              min(insect_By, y), 
+                                              max(insect_By, y))
                 points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
                 eta_in_A.append(-len(points_not_overlap) / len(set(A_dots) & set(line_dots)))
         etas.append(eta_in_A)
