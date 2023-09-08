@@ -39,18 +39,19 @@ def get_lines(guide, depths, theta):
                 return result
             undetected_point = points_dic[sample_points[undetected_point_index]]
 
-theta = degrees_to_radians(60.0)
-alpha = degrees_to_radians(1.5)
-center_depth = 110
-d = 200
-thpr = diminished_angle(theta)
+if __name__ == '__main__':
+    theta = degrees_to_radians(60.0)
+    alpha = degrees_to_radians(1.5)
+    center_depth = 110
+    d = 200
+    thpr = diminished_angle(theta)
 
-guide = (0, -1)
-a = get_depths(4, 2, center_depth, alpha)
-b = depth_to_numpy(a)
-depths = interpolate(b, 0)
+    guide = (0, -1)
+    a = get_depths(4, 2, center_depth, alpha)
+    b = depth_to_numpy(a)
+    depths = interpolate(b, 0)
 
-result = get_lines(guide, depths, thpr)
-print(len(result))
+    result = get_lines(guide, depths, thpr)
+    print(len(result))
 
 

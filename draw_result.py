@@ -1,45 +1,59 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-# 假设你有点的坐标列表，例如 [(x1, y1), (x2, y2), ...]
-points = [(1, 2), (3, 4), (5, 6)]
-
-# 假设你有线的一般式方程列表，例如 [(A1, B1, C1), (A2, B2, C2), ...]
-lines = [(1, -1, 0), (-2, 3, 5), (0, 1, -3)]  # 包括一个B=0的线
-
-# 创建一个图形窗口
-plt.figure(figsize=(8, 8))
-
-# 将点的坐标分别提取出来
-x_points, y_points = zip(*points)
-
-# 调整节点的大小
-point_size = 100  # 设置节点的大小
-plt.scatter(x_points, y_points, s=point_size, color='blue', marker='o', label='Points')
-
-# 计算线的端点坐标
-x_min, x_max = plt.xlim()
-for line in lines:
-    A, B, C = line
-    if B != 0:
-        x_values = np.linspace(x_min, x_max, 100)  # 生成一些 x 值用于绘制线
-        y_values = (-A * x_values - C) / B
-        
-        # 调整线的粗细
-        line_width = 2.0  # 设置线的粗细
-        plt.plot(x_values, y_values, linewidth=line_width, label=f'Line {A}x + {B}y + {C} = 0')
+# 计算一个一般式直线与线段的交点
+def cross_point(x0, y0, x1, y1, a, b):
+    u = x0 * a + y0 * b + 1
+    v = x1 * a + y1 * b + 1
+    if u * v < 0:
+        x = (abs(v) * x0 + abs(u) * x1) / (abs(u) + abs(v))
+        y = (abs(v) * y0 + abs(u) * y1) / (abs(u) + abs(v))
+        return (x, y)
     else:
-        # 处理斜率为0的情况，绘制垂直于x轴的竖直线
-        x = -C / A
-        plt.vlines(x, ymin=plt.ylim()[0], ymax=plt.ylim()[1], colors='red', linestyles='dashed', linewidth=line_width, label=f'Line {A}x + {B}y + {C} = 0 (Vertical)')
+        return ()
 
-# 添加图例、标签和标题
-plt.legend()
-plt.xlabel('X-axis')
-plt.ylabel('Y-axis')
-plt.title('Scatter Plot and Lines')
+# 计算一个一般式直线ax+by+1=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
+# |n _m
+def cross(n, m, a, b):
+    result = []
+    vertex = [(0,0),(0,n),(n,m),(m,0),(0,0)]
+    for i in range(4):
+        point = cross_point(vertex[i][0], vertex[i][1], vertex[i+1][0], vertex[i+1][1], a, b)
+        if point != ():
+            result.append(point)
+    if len(result) == 1: result = []
+    return result
 
-# 显示图形
-plt.grid(True)
-plt.show()
+def line_in_grads(n, m, lines):
+    # 假设你有点的坐标列表，例如 [(x1, y1), (x2, y2), ...]
+    points = [(x, y) for y in range(n+1) for x in range(m+1)]
 
+    # 创建一个图形窗口
+    plt.figure(figsize=(8, 8))
+
+    # 将点的坐标分别提取出来
+    x_points, y_points = zip(*points)
+
+    # 调整节点的大小
+    point_size = 3  # 设置节点的大小
+    plt.scatter(x_points, y_points, s=point_size, color='blue', marker='o', label='Points')
+
+    # 计算线的端点坐标
+    for line in lines:
+        vector = cross(n, m, line[0], line[1])
+        if vector != []:
+            line_width = 3
+            plt.plot([vector[0][0],vector[1][0]], [vector[0][1],vector[1][1]], linewidth=line_width)
+
+    # 添加图例、标签和标题
+    plt.legend()
+    plt.xlabel('X-axis')
+    plt.ylabel('Y-axis')
+    plt.title('Scatter Plot and Lines')
+
+    # 显示图形
+    plt.grid(True)
+    plt.show()
+
+if __name__ == "__main__":
+    line_in_grads(10, 10, [[-1,7], [2,-6]])

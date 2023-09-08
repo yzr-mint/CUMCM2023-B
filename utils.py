@@ -191,13 +191,13 @@ def get_eta(points, lines, xsize, ysize):
             if len(overlap): # eta > 0
                 eta_in_A.append(len(overlap) / len(set(A_dots) & set(line_dots)))
             else:            # eta < 0
-                insect_Bx = (Bb - lb) / (lb * Ba - la * Bb)
-                insect_By = (la - Ba) / (lb * Ba - la * Bb)
+                insect_Bx = int((Bb - lb) / (lb * Ba - la * Bb))
+                insect_By = int((la - Ba) / (lb * Ba - la * Bb))
                 temp_line = get_sample_points(la, lb, 
-                                              min(insect_Bx, x), 
-                                              max(insect_Bx, x), 
-                                              min(insect_By, y), 
-                                              max(insect_By, y))
+                                              min(insect_Bx, int(x)), 
+                                              max(insect_Bx, int(x)), 
+                                              min(insect_By, int(y)), 
+                                              max(insect_By, int(y)))
                 points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
                 eta_in_A.append(-len(points_not_overlap) / len(set(A_dots) & set(line_dots)))
         etas.append(eta_in_A)
@@ -224,11 +224,11 @@ def get_k(a, b):
     return - a / b
 
 # 返回加权和
-def weight_sum(lst):
+def weight_sum(lst, center = 0.15):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
-    result = sum(lst * weights)
-    return result
+    result = sum(array(lst) * weights)
+    return result - center
 
 # 得到沿着x轴方向（即东西方向）的线与所提供直线的交点坐标
 def get_point_with_x(a, b, fix_x):
