@@ -136,3 +136,6 @@ def get_detected_points(points, a, b):
             result.add((point.x, point.y))
     return result
 
+def get_orth(a, b, x0, y0):
+    c = -a * x0 - b * y0
+    return a / c, b / c
