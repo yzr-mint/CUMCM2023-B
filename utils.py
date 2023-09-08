@@ -87,3 +87,26 @@ def gridding(length, width, depths, theta, unit = 37.04):
 
     return points
 
+# 对ax+by+1=0在[xl, xh) x [yl, yh)里采样整点
+def sample_dots(a, b, xl, xh, yl, yh):
+    result = []
+    if a >= b:
+        for y in range(yl, yh):
+            x = (b * y + 1) / (-a)
+            if xl <= x and x < xh:
+                result.append((floor(x), y))
+    else:
+        for x in range(xl, xh):
+            y = (a * x + 1) / (-b)
+            if yl <= y and y < yh:
+                result.append((x, floor(y)))
+    return result
+
+# 寻找[points]中被ax+by+1=0探测到的点
+def detected_points(points, a, b):
+    result = set()
+    for point in points:
+        if point.detected(a, b):
+            result.add((point.x, point.y))
+    return result
+
