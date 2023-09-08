@@ -42,11 +42,16 @@ class point:
         self.x = x
         self.y = y
         self.z = z
+        # 是半径的平方!
         self.r2 = (z * tan(theta))**2
     
     # 直线统一用ax+by+1=0
     def detected(self, a, b):
         return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 1) ** 2
+    
+    # 看(x,y)是不是在半径范围内
+    def close_enough(self, x, y):
+        return (self.x - x)**2 + (self.y - y)**2 < self.r2
 
 def get_depths(length, width, center_depth, alpha, unit = 37.04):
     """
@@ -109,7 +114,7 @@ def get_depth_dic(length, width, depths, theta, unit = 37.04):
     return points
 
 # 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
-def sample_dots(a, b, xl, xr, yl, yr):
+def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
     if a >= b:
         for y in range(yl, yr):
@@ -124,7 +129,7 @@ def sample_dots(a, b, xl, xr, yl, yr):
     return result
 
 # 寻找[points]中被ax+by+1=0探测到的点
-def detected_points(points, a, b):
+def get_detected_points(points, a, b):
     result = set()
     for point in points:
         if point.detected(a, b):
