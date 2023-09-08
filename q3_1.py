@@ -14,10 +14,10 @@ def get_lines(guide, depths, theta):
 
     while(1):
         # 找下一个测线经过的点
-        undetected_points = sample_points[undetected_point_index]
-        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1]) == False):
+        undetected_point = points_dic[sample_points[undetected_point_index]]
+        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_point.x, undetected_point.y) == False):
             choose_point_index += 1
-        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1])):
+        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_point.x, undetected_point.y)):
             choose_point_index += 1
             if(choose_point_index == len(sample_points)):
                 choose_point_index -= 1
@@ -48,7 +48,7 @@ thpr = diminished_angle(theta)
 guide = (0, -1)
 a = get_depths(4, 2, center_depth, alpha)
 b = depth_to_numpy(a)
-depths = interpolate(b, 4)
+depths = interpolate(b, 0)
 
 result = get_lines(guide, depths, thpr)
 print(len(result))
