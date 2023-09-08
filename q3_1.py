@@ -19,8 +19,9 @@ sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
 
 undetected_point_index = 0
 choose_point_index = 0
+sign = 1
 
-while(1):
+while(sign):
     # 找下一个测线经过的点
     undetected_points = sample_points[undetected_point_index]
     while(sample_points[choose_point_index].close_enough(undetected_points.x, undetected_points.y)):
@@ -30,6 +31,13 @@ while(1):
     result.append(a, b)
 
     # 找下一个无法被探测的点
-    
+    while(sample_points[undetected_point_index].detected(a, b)):
+        undetected_point_index += 1
+        if undetected_point_index == len(sample_points):
+            sign = 0
+            break
+    undetected_point_index -= 1
+
+print(result)
 
 
