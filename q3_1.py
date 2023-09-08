@@ -1,31 +1,18 @@
 from utils import *
 from numpy import *
 
-def get_lines():
-    theta = degrees_to_radians(60.0)
-    alpha = degrees_to_radians(1.5)
-    center_depth = 110
-    d = 200
-    thpr = diminished_angle(theta)
-
-    guide = (0, -1)
-    # [(a,b)] (一堆线)
+def get_lines(guide, depths, theta):
+    # result格式为[(a,b)] (一堆线)
     result = []
 
     xl = 0
     yl = 0
-    a=get_depths(4, 2, center_depth, alpha)
-    b = depth_to_numpy(a)
-    c = interpolate(b, 4)
-    points_dic, xr, yr = depth_to_point_dic(c, thpr)
-
+    points_dic, xr, yr = depth_to_point_dic(depths, theta)
     sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
-
     undetected_point_index = 0
     choose_point_index = 0
-    sign = 1
 
-    while(sign):
+    while(1):
         # 找下一个测线经过的点
         undetected_points = sample_points[undetected_point_index]
         while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1]) == False):
@@ -52,7 +39,18 @@ def get_lines():
                 return result
             undetected_point = points_dic[sample_points[undetected_point_index]]
 
-result = get_lines()
+theta = degrees_to_radians(60.0)
+alpha = degrees_to_radians(1.5)
+center_depth = 110
+d = 200
+thpr = diminished_angle(theta)
+
+guide = (0, -1)
+a = get_depths(4, 2, center_depth, alpha)
+b = depth_to_numpy(a)
+depths = interpolate(b, 4)
+
+result = get_lines(guide, depths, thpr)
 print(len(result))
 
 
