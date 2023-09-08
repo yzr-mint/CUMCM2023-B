@@ -64,8 +64,7 @@ def get_depths(length, width, center_depth, alpha, unit = 37.04):
 
     return depths
 
-
-def gridding(length, width, depths, theta, unit = 37.04):
+def get_points(length, width, depths, theta, unit = 37.04):
     """
     return a points list
 
@@ -83,7 +82,29 @@ def gridding(length, width, depths, theta, unit = 37.04):
 
     for x in range(x_size):
         for y in range(y_size):
-            points.append({(x, y): point(x, y, depths[x][y] / unit, theta)})
+            points.append(point(x, y, depths[x][y] / unit, theta))
+
+    return points
+
+def get_depth_dic(length, width, depths, theta, unit = 37.04):
+    """
+    return a points list
+
+    Parameters
+    ----------
+    - length: haili, the length of the ocean
+    - width: haili, the width of the ocean
+    - depths: a list of depths(2 dimensions)
+    - theta: half of the detecting angle
+    - unit: 1852 * 0.02 = 37.04
+    """
+    points = []
+    x_size = int(haili_to_meter(length) / unit + 1)
+    y_size = int(haili_to_meter(width) / unit + 1)
+
+    for x in range(x_size):
+        for y in range(y_size):
+            points.append({(x, y): depths[x][y] / unit})
 
     return points
 
