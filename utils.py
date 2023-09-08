@@ -86,6 +86,26 @@ def depth_to_point_set(depth, theta):
 def depth_to_depth_dic(depth):
     return {dep for i in depth for dep in i}
 
+def depth_to_numpy(depth):
+    return array(depth)
+
+def interpolate(d_matrix, times):
+    for i in range(times):
+        # 计算相邻两行的平均值
+        row_avg = (d_matrix[:-1] + d_matrix[1:]) / 2
+        # 将平均值插入到相邻两行之间
+        tmp1 = vstack((d_matrix, row_avg))
+        # 计算相邻两列的平均值
+        col_avg = (tmp1[:, :-1] + tmp1[:, 1:]) / 2
+        # 将平均值插入到相邻两列之间
+        tmp2 = hstack((tmp1, col_avg))
+        # 把高度按比例增加
+        d_matrix = tmp2 * 2
+    return d_matrix
+
+
+    
+
 # 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
@@ -115,7 +135,7 @@ def get_sample_points(a, b, xl, xr, yl, yr):
 def get_detected_points(points, a, b):
     result = set()
     for point in points:
-        if point.detected(a, b):
+        if point.detected_by(a, b):
             result.add((point.x, point.y))
     return result
 
@@ -127,3 +147,5 @@ def get_orth(a, b, x0, y0):
 # 将放缩之后的直线的方程转化为原来以米为单位的讨论上
 def get_origin_param(a, b, unit = UNIT): 
     return a / unit, b / unit
+
+

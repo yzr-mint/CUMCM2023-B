@@ -4,7 +4,7 @@ from numpy import *
 def get_lines():
     theta = degrees_to_radians(60.0)
     alpha = degrees_to_radians(1.5)
-    center_depth = 110   
+    center_depth = 110
     d = 200
     thpr = diminished_angle(theta)
 
@@ -15,7 +15,9 @@ def get_lines():
     xl = 0
     yl = 0
     a=get_depths(4, 2, center_depth, alpha)
-    points_dic, xr, yr = depth_to_point_dic(a, thpr)
+    b = depth_to_numpy(a)
+    c = interpolate(b, 4)
+    points_dic, xr, yr = depth_to_point_dic(c, thpr)
 
     sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
 
@@ -26,6 +28,8 @@ def get_lines():
     while(sign):
         # 找下一个测线经过的点
         undetected_points = sample_points[undetected_point_index]
+        while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1]) == False):
+            choose_point_index += 1
         while(points_dic[sample_points[choose_point_index]].close_enough(undetected_points[0], undetected_points[1])):
             choose_point_index += 1
             if(choose_point_index == len(sample_points)):
@@ -39,15 +43,16 @@ def get_lines():
         result.append((a, b))
 
         # 找下一个无法被探测的点
-        undetected_point = points_dic[sample_points[undetected_point_index]]
+        while(undetected_point.detected_by(a, b) == False):
+            undetected_point_index += 1
+            undetected_point = points_dic[sample_points[undetected_point_index]]
         while(undetected_point.detected_by(a, b)):
             undetected_point_index += 1
             if undetected_point_index == len(sample_points):
                 return result
             undetected_point = points_dic[sample_points[undetected_point_index]]
-        choose_point_index += 1
 
 result = get_lines()
-print(result)
+print(len(result))
 
 
