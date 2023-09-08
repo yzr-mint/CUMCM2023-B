@@ -1,4 +1,3 @@
-import math
 from numpy import *
 
 # °转到弧度
@@ -31,3 +30,25 @@ def haili_to_meter(haili):
 # 变成约化角度(弧度)
 def diminished_angle(th):
     return arctan(tan(th) / (1 + 0.15))
+
+# 把两点式化成标准形式ax+by+1=0
+def normalize(x1, y1, x2, y2):
+    return (y2-y1)/(x2*y1-x1*y2), (x1-x2)/(x2*y1-x1*y2)
+
+
+# 海底点的类
+class point:
+    def __init__(self, x, y, z, theta):
+        self.x = x
+        self.y = y
+        self.z = z
+        self.r2 = (z * tan(theta))**2
+    
+    # 直线统一用ax+by+1=0
+    def detected(self, a, b):
+        return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 1) ** 2
+
+
+
+
+
