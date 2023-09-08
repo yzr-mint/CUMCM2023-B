@@ -84,7 +84,7 @@ def get_points(length, width, depths, theta, unit = 37.04):
         for y in range(y_size):
             points.append(point(x, y, depths[x][y] / unit, theta))
 
-    return points
+    return points, x_size, y_size
 
 def get_depth_dic(length, width, depths, theta, unit = 37.04):
     """
@@ -108,18 +108,18 @@ def get_depth_dic(length, width, depths, theta, unit = 37.04):
 
     return points
 
-# 对ax+by+1=0在[xl, xh) x [yl, yh)里采样整点
-def sample_dots(a, b, xl, xh, yl, yh):
+# 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
+def sample_dots(a, b, xl, xr, yl, yr):
     result = []
     if a >= b:
-        for y in range(yl, yh):
+        for y in range(yl, yr):
             x = (b * y + 1) / (-a)
-            if xl <= x and x < xh:
+            if xl <= x and x < xr:
                 result.append((floor(x), y))
     else:
-        for x in range(xl, xh):
+        for x in range(xl, xr):
             y = (a * x + 1) / (-b)
-            if yl <= y and y < yh:
+            if yl <= y and y < yr:
                 result.append((x, floor(y)))
     return result
 
