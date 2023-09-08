@@ -3,7 +3,7 @@ from numpy import *
 
 theta = degrees_to_radians(60.0)
 alpha = degrees_to_radians(1.5)
-center_depth = 70.0     
+center_depth = 110   
 d = 200
 thpr = diminished_angle(theta)
 
@@ -13,10 +13,10 @@ result = []
 
 xl = 0
 yl = 0
-a = get_depths(4, 2, 110, alpha)
-points_dic, xr, yr = get_points_dic(4, 2, get_depths(4, 2, 110, alpha), thpr, unit = 37.04)
+a=get_depths(4, 2, 110, center_depth)
+points_dic, xr, yr = get_points_dic(4, 2, get_depths(4, 2, 110, center_depth), thpr, unit = 37.04)
 
-sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
+sample_points = get_sample_points(guide[0], guide[1], xl, xr+1, yl, yr+1)
 
 undetected_point_index = 0
 choose_point_index = 0
@@ -39,6 +39,7 @@ while(sign):
             sign = 0
             break
         undetected_point = points_dic[sample_points[undetected_point_index]]
+    choose_point_index += 1
 
 print(result)
 

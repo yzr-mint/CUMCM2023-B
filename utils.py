@@ -22,8 +22,8 @@ def get_alprime(al, be):
 
 # 用深度和探测夹角得到 要扫到海底这点所需要的 
 # 与测线的水平距离
-def get_radius(d, al):
-    return d * tan(al)
+def get_radius(d, th):
+    return d * tan(th)
 
 # 海里转换成米
 def haili_to_meter(haili):
