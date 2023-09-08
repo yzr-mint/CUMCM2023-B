@@ -29,7 +29,8 @@ def detected_points(points, a, b):
         if point.detected(a, b):
             result.add((point.x, point.y))
     return result
-        
+
+
 
 thpr = diminished_angle(theta)
 result = []
