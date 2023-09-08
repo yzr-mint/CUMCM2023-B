@@ -1,5 +1,7 @@
 from numpy import *
 
+UNIT = 37.04
+
 # °转到弧度
 def degrees_to_radians(degrees):
     radians = degrees * pi / 180.0
@@ -53,7 +55,7 @@ class point:
     def close_enough(self, x, y):
         return (self.x - x)**2 + (self.y - y)**2 < self.r2
 
-def get_depths(length, width, center_depth, alpha, unit = 37.04):
+def get_depths(length, width, center_depth, alpha, unit = UNIT):
     """
     return a list of depths, depths[x][y] means depth of (x, y)
     """
@@ -69,7 +71,7 @@ def get_depths(length, width, center_depth, alpha, unit = 37.04):
 
     return depths
 
-def get_points_set(length, width, depths, theta, unit = 37.04):
+def get_points_set(length, width, depths, theta, unit = UNIT):
     """
     return a points list
 
@@ -79,7 +81,6 @@ def get_points_set(length, width, depths, theta, unit = 37.04):
     - width: haili, the width of the ocean
     - depths: a list of depths(2 dimensions)
     - theta: half of the detecting angle
-    - unit: 1852 * 0.02 = 37.04
     """
     points = []
     x_size = int(haili_to_meter(length) / unit + 1)
@@ -91,7 +92,7 @@ def get_points_set(length, width, depths, theta, unit = 37.04):
 
     return points, x_size, y_size
 
-def get_points_dic(length, width, depths, theta, unit = 37.04):
+def get_points_dic(length, width, depths, theta, unit = UNIT):
     """
     return a points list
 
@@ -101,7 +102,6 @@ def get_points_dic(length, width, depths, theta, unit = 37.04):
     - width: haili, the width of the ocean
     - depths: a list of depths(2 dimensions)
     - theta: half of the detecting angle
-    - unit: 1852 * 0.02 = 37.04
     """
     points = {}
     x_size = int(haili_to_meter(length) / unit + 1)
@@ -113,7 +113,7 @@ def get_points_dic(length, width, depths, theta, unit = 37.04):
 
     return points, x_size, y_size
 
-def get_depth_dic(length, width, depths, theta, unit = 37.04):
+def get_depth_dic(length, width, depths, theta, unit = UNIT):
     """
     return a points list
 
@@ -123,7 +123,6 @@ def get_depth_dic(length, width, depths, theta, unit = 37.04):
     - width: haili, the width of the ocean
     - depths: a list of depths(2 dimensions)
     - theta: half of the detecting angle
-    - unit: 1852 * 0.02 = 37.04
     """
     points = []
     x_size = int(haili_to_meter(length) / unit + 1)
@@ -172,3 +171,6 @@ def get_detected_points(points, a, b):
 def get_orth(a, b, x0, y0):
     c = -a * x0 - b * y0
     return a / c, b / c
+
+def get_origin_param(a, b, unit = UNIT): 
+    return a / unit, b / unit
