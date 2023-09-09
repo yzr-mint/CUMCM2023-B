@@ -252,7 +252,7 @@ def cross_point(x0, y0, x1, y1, a, b):
     else:
         return ()
 
-# 计算一个一般式直线ax+by+1=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
+# 计算一个一般式直线ax+by+10000=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
 # |n _m
 def cross(n, m, a, b):
     result = []
@@ -263,3 +263,11 @@ def cross(n, m, a, b):
             result.append(point)
     if len(result) == 1: result = []
     return result
+
+def in_length(n, m, a, b):
+    cross_points = cross(n, m, a, b)
+    if len(cross_points):
+        return sqrt((cross_points[0][0] - cross_points[1][0]) ** 2 + (cross_points[0][1] - cross_points[1][1]) ** 2)
+    else:
+        return 0
+        

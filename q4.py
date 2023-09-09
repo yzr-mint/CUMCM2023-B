@@ -10,8 +10,8 @@ def iteration(points, lines, xsize, ysize, dir):
     dir = -1, 往左
     """
     etas = get_eta(points, lines, xsize, ysize)
-    new_lines = []
-    gamma = 0.1
+    new_lines = [lines[0]]
+    gamma = 0.01
     for i in range(1, len(etas)):
         a, b = lines[i][0], lines[i][1]
         new_a, new_b = a, b
