@@ -32,7 +32,7 @@ def haili_to_meter(haili):
 
 # 变成约化角度(弧度)
 def diminished_angle(th):
-    return arctan(tan(th) / (1 + 0.15))
+    return arctan((1 - 0.15)*tan(th))
 
 # 把两点式化成标准形式ax+by+10000=0
 def normalize(x1, y1, x2, y2):

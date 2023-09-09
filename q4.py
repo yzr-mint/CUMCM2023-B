@@ -11,7 +11,7 @@ def iteration(points, lines, xsize, ysize, dir):
     """
     etas = get_eta(points, lines, xsize, ysize)
     new_lines = []
-    gamma = 0.00001
+    gamma = 0.1
     for i in range(1, len(etas)):
         a, b = lines[i][0], lines[i][1]
         new_a, new_b = a, b
@@ -54,7 +54,7 @@ def iteration(points, lines, xsize, ysize, dir):
 theta = degrees_to_radians(60.0)
 theta_prime = diminished_angle(theta)
 # 经过中心点的直线. 7和-1可以改
-guide = get_nor(-7, 1, 100, 125)
+guide = get_nor(-1, 1, 100, 125)
 xsize = 200
 ysize = 250
 
@@ -72,13 +72,17 @@ tolerent = Tolerent
 epoch = 0
 all_results = []
 
-epoch = 15
+epoch = 5
 for i in range(epoch):
     print("epoch %d" % i)
     lines = iteration(points, lines, xsize, ysize, 1)
     print("number of lines: %d" % len(lines))
+    all_results.append(lines)
+
     lines = iteration(points, lines[::-1], xsize, ysize, -1)
     print("number of lines: %d" % len(lines))
+    all_results.append(lines)
+
 
 '''
 while(tolerent):
