@@ -189,7 +189,7 @@ def get_eta(points, lines, xsize, ysize):
             line_dots = get_sample_points(la, lb, 0, xsize, 0, ysize)
             overlap = set(A_dots) & set(B_dots) & set(line_dots)
             if len(overlap): # eta > 0
-                eta_in_A.append(len(overlap) / len(set(A_dots) & set(line_dots)))
+                eta_in_A.append(len(overlap) / max(len(set(A_dots) & set(line_dots)), 1))
             else:            # eta < 0
                 insect_Bx = int((Bb - lb) / (lb * Ba - la * Bb))
                 insect_By = int((la - Ba) / (lb * Ba - la * Bb))
@@ -199,8 +199,9 @@ def get_eta(points, lines, xsize, ysize):
                                               min(insect_By, int(y)), 
                                               max(insect_By, int(y)))
                 points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
-                eta_in_A.append(-len(points_not_overlap) / len(set(A_dots) & set(line_dots)))
+                eta_in_A.append(-len(points_not_overlap) / max(len(set(A_dots) & set(line_dots)), 1))
         etas.append(eta_in_A)
+    etas = array(etas)
     return etas
 
 # 第四问读取表格，返回点集合(已经除以unit)
@@ -223,12 +224,12 @@ def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60
 def get_k(a, b):
     return - a / b
 
-# 返回加权和
+# 返回加权和#######################################
 def weight_sum(lst, center = 0.15):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
-    result = sum(array(lst) * weights)
-    return result - center
+    result = sum(((lst - 0.15) / 0.05) ** 2 * weights) / size
+    return result
 
 # 得到沿着x轴方向（即东西方向）的线与所提供直线的交点坐标
 def get_point_with_x(a, b, fix_x):

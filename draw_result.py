@@ -57,3 +57,25 @@ def line_in_grads(n, m, lines):
 
 if __name__ == "__main__":
     line_in_grads(200, 250, [[-0.05,7], [3,-0.06]])
+
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+
+# 创建一个函数，用于生成您的plt图
+def create_plot(i):
+    plt.clf()  # 清除当前图形
+    # 在这里生成您的plt图，可以使用不同的数据或参数
+    # 例如：
+    plt.plot([1, 2, 3, 4], [i, i*2, i*3, i*4])
+    plt.title(f'Frame {i}')
+
+# 设置动画参数
+fig = plt.figure()
+ani = animation.FuncAnimation(fig, create_plot, frames=10, interval=1000)
+
+# 保存动画为文件或显示在窗口中
+# 若要保存为文件，可以使用下面的代码：
+# ani.save('my_animation.gif', writer='pillow')
+
+# 若要在窗口中显示动画，可以使用下面的代码：
+plt.show()
