@@ -1,6 +1,9 @@
 from utils import *
 from q3_1 import *
 from draw_result import *
+import pickle
+
+
 
 Tolerent = 5
 
@@ -53,7 +56,8 @@ def iteration(points, lines, xsize, ysize, dir, gamma):
 theta = degrees_to_radians(60.0)
 theta_prime = diminished_angle(theta)
 # 经过中心点的直线. 7和-1可以改
-guide = get_nor(-1, 1, 100, 125)
+#guide = get_nor(5, -4.001, 100, 125)
+guide = get_nor(5, -8, 100, 125)
 xsize = 200
 ysize = 250
 
@@ -68,12 +72,11 @@ pre_result = 10000
 lines_num = len(lines)
 sign = 1
 tolerent = Tolerent
-epoch = 0
 all_results = []
 gamma = 0.00001
 print("gamma = ", gamma)
 
-epoch = 5
+epoch = 100
 for i in range(epoch):
     print("epoch %d" % i)
     lines = iteration(points, lines, xsize, ysize, 1, gamma)
@@ -105,3 +108,6 @@ while(tolerent):
         pre_result = lines_num
 '''
 many_line_in_grads(200, 250, all_results)
+# 将列表保存为二进制文件
+with open('my_list.pkl', 'wb') as file:
+    pickle.dump(all_results, file)

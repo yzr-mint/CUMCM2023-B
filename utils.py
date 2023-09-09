@@ -104,6 +104,18 @@ def interpolate(d_matrix, times):
         d_matrix = tmp2 * 2
     return d_matrix
 
+# 得到对对角线的采样, 哪条对角线由斜率决定
+def get_sample_diag(a, b, xl, xr, yl, yr):
+    
+    # 采从左上到右下这条线
+    if a * b > 0:
+        line = normalize(xl, yr, xr, yl)
+    else:
+        line = normalize(xl + 1, yl - 1, xr, yr)
+    
+    return get_sample_points(line[0], line[1], xl, xr, yl, yr)
+
+
 # 对ax+by+10000=0在[xl, xh) x [yl, yr)里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
@@ -163,10 +175,13 @@ def get_detected_points(points, a, b):
             result.add((point.x, point.y))
     return result
 
-# 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式##################################
+# 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式
 def get_nor(a, b, x0, y0):
     c = -a * x0 - b * y0
-    return 10000* a / c, 10000* b / c
+    try:
+        return 10000 * a / c, 10000 * b / c
+    except ZeroDivisionError:
+        return 10000 * a / 0.001, 10000 * b / 0.001
 
 # 将放缩之后的直线的方程转化为原来以米为单位的讨论上
 def get_origin_param(a, b, unit = UNIT): 

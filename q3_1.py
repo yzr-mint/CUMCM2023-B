@@ -9,7 +9,7 @@ def get_lines(guide, depths, theta):
     xl = 0
     yl = 0
     points_dic, xr, yr = depth_to_point_dic(depths, theta)
-    sample_points = get_sample_points(guide[0], guide[1], xl, xr, yl, yr)
+    sample_points = get_sample_diag(guide[0], guide[1], xl, xr, yl, yr)    
     undetected_point_index = 0
     choose_point_index = 0
 
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     d = 200
     thpr = diminished_angle(theta)
 
-    guide = (0, -200)
+    guide = get_nor(0, -200, 50, 100)
     a = get_depths(4, 2, center_depth, alpha)
     b = depth_to_numpy(a)
     depths = interpolate(b, 0)
