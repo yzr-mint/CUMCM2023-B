@@ -185,7 +185,7 @@ def get_eta(points, lines, xsize, ysize):
         B_dots = get_detected_points(points, Ba, Bb)
         for (x, y) in dots:
             # get points on the grid inside dot detection range
-            la, lb = -Ab / (Ab * x - Aa * y), Aa / (Ab * x - Aa * y)
+            la, lb = get_nor(-Ab, Aa, x, y)
             line_dots = get_sample_points(la, lb, 0, xsize, 0, ysize)
             overlap = set(A_dots) & set(B_dots) & set(line_dots)
             if len(overlap): # eta > 0
@@ -229,7 +229,14 @@ def weight_sum(lst, center = 0.15):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
     result = sum(((lst - center) / 0.05) ** 2 * weights) / size
+    constrain(result, 0.001)
     return result
+
+def constrain(result, bound):
+    if result > 0:
+        return min(result, bound)
+    else:
+        return max(result, -bound)
 
 # 得到沿着x轴方向（即东西方向）的线与所提供直线的交点坐标
 def get_point_with_x(a, b, fix_x):
@@ -238,8 +245,6 @@ def get_point_with_x(a, b, fix_x):
 # 得到沿着y轴方向（即南北方向）的线与所提供直线的交点坐标
 def get_point_with_y(a, b, fix_y):
     return (-10000 - b * fix_y) / a, fix_y
-
-
 
 # 计算一个一般式直线与线段的交点
 def cross_point(x0, y0, x1, y1, a, b):
@@ -256,7 +261,7 @@ def cross_point(x0, y0, x1, y1, a, b):
 # |n _m
 def cross(n, m, a, b):
     result = []
-    vertex = [(0,0),(0,n),(n,m),(m,0),(0,0)]
+    vertex = [(0,0),(0,n),(m,n),(m,0),(0,0)]
     for i in range(4):
         point = cross_point(vertex[i][0], vertex[i][1], vertex[i+1][0], vertex[i+1][1], a, b)
         if point != ():

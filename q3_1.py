@@ -1,5 +1,6 @@
 from utils import *
 from numpy import *
+from draw_result import *
 
 def get_lines(guide, depths, theta):
     # result格式为[(a,b)] (一堆线)
@@ -46,12 +47,13 @@ if __name__ == '__main__':
     d = 200
     thpr = diminished_angle(theta)
 
-    guide = (0, -1)
+    guide = (0, -200)
     a = get_depths(4, 2, center_depth, alpha)
     b = depth_to_numpy(a)
     depths = interpolate(b, 0)
 
     result = get_lines(guide, depths, thpr)
     print(len(result))
+    line_in_grads(100, 200, result)
 
 

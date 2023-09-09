@@ -19,7 +19,7 @@ def line_in_grads(n, m, lines):
     for line in lines:
         vector = cross(n, m, line[0], line[1])
         if vector != []:
-            line_width = 3
+            line_width = 1
             plt.plot([vector[0][0],vector[1][0]], [vector[0][1],vector[1][1]], linewidth=line_width)
 
     # 添加图例、标签和标题

@@ -4,14 +4,13 @@ from draw_result import *
 
 Tolerent = 5
 
-def iteration(points, lines, xsize, ysize, dir):
+def iteration(points, lines, xsize, ysize, dir, gamma):
     """
     dir = 1, 往右
     dir = -1, 往左
     """
     etas = get_eta(points, lines, xsize, ysize)
     new_lines = [lines[0]]
-    gamma = 0.01
     for i in range(1, len(etas)):
         a, b = lines[i][0], lines[i][1]
         new_a, new_b = a, b
@@ -71,15 +70,17 @@ sign = 1
 tolerent = Tolerent
 epoch = 0
 all_results = []
+gamma = 0.00001
+print("gamma = ", gamma)
 
 epoch = 5
 for i in range(epoch):
     print("epoch %d" % i)
-    lines = iteration(points, lines, xsize, ysize, 1)
+    lines = iteration(points, lines, xsize, ysize, 1, gamma)
     print("number of lines: %d" % len(lines))
     all_results.append(lines)
 
-    lines = iteration(points, lines[::-1], xsize, ysize, -1)
+    lines = iteration(points, lines[::-1], xsize, ysize, -1, gamma)
     print("number of lines: %d" % len(lines))
     all_results.append(lines)
 
