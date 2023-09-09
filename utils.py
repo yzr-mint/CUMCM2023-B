@@ -179,9 +179,14 @@ def get_detected_points(points, a, b):
 def get_nor(a, b, x0, y0):
     c = -a * x0 - b * y0
     try:
-        return 10000 * a / c, 10000 * b / c
+        ap = 10000 * a / c
     except ZeroDivisionError:
-        return 10000 * a / 0.001, 10000 * b / 0.001
+        ap = 10000 * a / 0.0001
+    try:
+        bp = 10000 * b / c
+    except ZeroDivisionError:
+        bp = 10000 * b / 0.0001
+    return ap, bp
 
 # 将放缩之后的直线的方程转化为原来以米为单位的讨论上
 def get_origin_param(a, b, unit = UNIT): 
@@ -237,13 +242,17 @@ def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60
 
 # 返回斜率
 def get_k(a, b):
-    return - a / b
+    try:
+        return - a / b
+    except ZeroDivisionError:
+        return 10000000
+
 
 # 返回加权和############################################################
 def weight_sum(lst, center = 0.15):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
-    result = sum(((lst - center) / 0.05) ** 2 * weights) / size
+    result = sum(((lst - center) / 0.05) * weights) / size
     constrain(result, 0.001)
     return result
 

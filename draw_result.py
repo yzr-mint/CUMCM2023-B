@@ -40,6 +40,7 @@ def many_line_in_grads(n, m, liness):
     def create_plot(i):
         plt.clf()  # 清除当前图形
         line_in_grads(n, m, liness[i])
+        plt.title(f'Epoch {i}')
 
     # 设置动画参数
     fig = plt.figure()

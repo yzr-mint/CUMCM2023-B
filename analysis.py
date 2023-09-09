@@ -17,6 +17,7 @@ def cover_rate(lines, points):
     rest_points_num = len(points)
     return rest_points_num / all_points_num
 
+# 超过20%长度
 def overlap_length(lines, xsize, ysize, ratio, points):
     """
     a, b: line

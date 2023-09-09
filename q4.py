@@ -3,10 +3,6 @@ from q3_1 import *
 from draw_result import *
 import pickle
 
-
-
-Tolerent = 5
-
 def iteration(points, lines, xsize, ysize, dir, gamma):
     """
     dir = 1, 往右
@@ -52,62 +48,39 @@ def iteration(points, lines, xsize, ysize, dir, gamma):
             new_lines.append((new_a, new_b))
     return new_lines
 
+# depth 是一个numpy矩阵, guide_ab是guide的方向, epoch是训练次数
+def train(depths, guide_ab, epoch, theta):
+    xsize = depths.shape[0]
+    ysize = depths.shape[1]
+    guide = get_nor(guide_ab[0], guide_ab[1], xsize/2, ysize/2)
+    points = depth_to_point_set(depths, theta)
 
-theta = degrees_to_radians(60.0)
-theta_prime = diminished_angle(theta)
-# 经过中心点的直线. 7和-1可以改
-#guide = get_nor(5, -4.001, 100, 125)
-guide = get_nor(5, -8, 100, 125)
-xsize = 200
-ysize = 250
+    theta_prime = diminished_angle(theta)
+    lines = get_lines(guide, depths, theta_prime)
+    all_results = []
+    gamma = 0.005
+    print("gamma = ", gamma)
+    print(len(lines))
 
-depths = read_excel_to_points(filename = '附件.xlsx')
-points = depth_to_point_set(depths, theta)
-depths = depth_to_numpy(depths)
-# depths = interpolate(depths, 4)
+    for i in range(epoch):
+        print("epoch %d" % i)
+        lines = iteration(points, lines, xsize, ysize, 1, gamma)
+        print("number of lines: %d" % len(lines))
+        all_results.append(lines)
 
-lines = get_lines(guide, depths, theta_prime)
+        lines = iteration(points, lines[::-1], xsize, ysize, -1, gamma)
+        print("number of lines: %d" % len(lines))
+        all_results.append(lines)
 
-pre_result = 10000
-lines_num = len(lines)
-sign = 1
-tolerent = Tolerent
-all_results = []
-gamma = 0.00001
-print("gamma = ", gamma)
+    many_line_in_grads(xsize, ysize, all_results)
+    # 将列表保存为二进制文件
+    with open('my_list.pkl', 'wb') as file:
+        pickle.dump(all_results, file)
 
-epoch = 100
-for i in range(epoch):
-    print("epoch %d" % i)
-    lines = iteration(points, lines, xsize, ysize, 1, gamma)
-    print("number of lines: %d" % len(lines))
-    all_results.append(lines)
+if __name__ == '__main__':
+    theta = degrees_to_radians(60.0)
+    depths = read_excel_to_points(filename = '附件.xlsx')
+    depths = depth_to_numpy(depths)
+    # depths = interpolate(depths, 4)
 
-    lines = iteration(points, lines[::-1], xsize, ysize, -1, gamma)
-    print("number of lines: %d" % len(lines))
-    all_results.append(lines)
-
-
-'''
-while(tolerent):
-    epoch += 1
-    print("epoch %d" % epoch)
-    lines = iteration(points, lines, xsize, ysize, 1)
-    print("number of lines: %d" % len(lines))
-    all_results.append(lines)
-
-    lines = iteration(points, lines[::-1], xsize, ysize, -1)
-    print("number of lines: %d" % len(lines))
-    all_results.append(lines)
-    
-    lines_num = len(lines)
-    if pre_result == lines_num:
-        tolerent -= 1
-    else:
-        tolerent = Tolerent
-        pre_result = lines_num
-'''
-many_line_in_grads(200, 250, all_results)
-# 将列表保存为二进制文件
-with open('my_list.pkl', 'wb') as file:
-    pickle.dump(all_results, file)
+    train(depths, (5, -4.001), 10, theta)
