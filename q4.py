@@ -52,7 +52,8 @@ def iteration(points, lines, xsize, ysize, dir):
 
 theta = degrees_to_radians(60.0)
 theta_prime = diminished_angle(theta)
-guide = (7, -1)
+# 经过中心点的直线. 7和-1可以改
+guide = get_nor(7, -1, 100, 125)
 xsize = 200
 ysize = 250
 
@@ -64,7 +65,7 @@ depths = depth_to_numpy(depths)
 lines = get_lines(guide, depths, theta_prime)
 
 pre_result = 10000
-result_lines = len(lines)
+lines_num = len(lines)
 sign = 1
 tolerent = Tolerent
 epoch = 0
@@ -86,9 +87,11 @@ while(tolerent):
     lines = iteration(points, lines[::-1], xsize, ysize, -1)
     print("number of lines: %d" % len(lines))
     
-    result_lines = len(lines)
-    if pre_result == result_lines:
+    lines_num = len(lines)
+    if pre_result == lines_num:
         tolerent -= 1
     else:
         tolerent = Tolerent
-        pre_result = result_lines
+        pre_result = lines_num
+
+print(lines)

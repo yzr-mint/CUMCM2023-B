@@ -21,12 +21,12 @@ def get_lines(guide, depths, theta):
             choose_point_index += 1
             if(choose_point_index == len(sample_points)):
                 choose_point_index -= 1
-                a, b = get_orth(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
+                a, b = get_nor(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
                 result.append((a, b))
                 return result
 
         choose_point_index -= 1
-        a, b = get_orth(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
+        a, b = get_nor(guide[1], -guide[0], sample_points[choose_point_index][0], sample_points[choose_point_index][1])
         result.append((a, b))
 
         # 找下一个无法被探测的点

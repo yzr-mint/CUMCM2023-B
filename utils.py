@@ -164,7 +164,7 @@ def get_detected_points(points, a, b):
     return result
 
 # 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式
-def get_orth(a, b, x0, y0):
+def get_nor(a, b, x0, y0):
     c = -a * x0 - b * y0
     return a / c, b / c
 
