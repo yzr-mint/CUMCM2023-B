@@ -29,14 +29,14 @@ def line_in_grads(n, m, lines):
     points = [(x, y) for y in range(n+1) for x in range(m+1)]
 
     # 创建一个图形窗口
-    plt.figure(figsize=(8, 8))
+    plt.figure(figsize=(50,50))
 
     # 将点的坐标分别提取出来
     x_points, y_points = zip(*points)
 
     # 调整节点的大小
     point_size = 3  # 设置节点的大小
-    plt.scatter(x_points, y_points, s=point_size, color='blue', marker='o', label='Points')
+    #plt.scatter(x_points, y_points, s=point_size, color='blue', marker='o', label='Points')
 
     # 计算线的端点坐标
     for line in lines:
@@ -56,4 +56,4 @@ def line_in_grads(n, m, lines):
     plt.show()
 
 if __name__ == "__main__":
-    line_in_grads(10, 10, [[-1,7], [2,-6]])
+    line_in_grads(200, 250, [[-0.05,7], [3,-0.06]])
