@@ -1,35 +1,12 @@
 import matplotlib.pyplot as plt
-import numpy as np
-
-# 计算一个一般式直线与线段的交点
-def cross_point(x0, y0, x1, y1, a, b):
-    u = x0 * a + y0 * b + 1
-    v = x1 * a + y1 * b + 1
-    if u * v < 0:
-        x = (abs(v) * x0 + abs(u) * x1) / (abs(u) + abs(v))
-        y = (abs(v) * y0 + abs(u) * y1) / (abs(u) + abs(v))
-        return (x, y)
-    else:
-        return ()
-
-# 计算一个一般式直线ax+by+1=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
-# |n _m
-def cross(n, m, a, b):
-    result = []
-    vertex = [(0,0),(0,n),(n,m),(m,0),(0,0)]
-    for i in range(4):
-        point = cross_point(vertex[i][0], vertex[i][1], vertex[i+1][0], vertex[i+1][1], a, b)
-        if point != ():
-            result.append(point)
-    if len(result) == 1: result = []
-    return result
+from utils import *
 
 def line_in_grads(n, m, lines):
     # 假设你有点的坐标列表，例如 [(x1, y1), (x2, y2), ...]
     points = [(x, y) for y in range(n+1) for x in range(m+1)]
 
     # 创建一个图形窗口
-    plt.figure(figsize=(50,50))
+    #plt.figure(figsize=(50,50))
 
     # 将点的坐标分别提取出来
     x_points, y_points = zip(*points)
@@ -55,27 +32,26 @@ def line_in_grads(n, m, lines):
     plt.grid(True)
     plt.show()
 
-if __name__ == "__main__":
-    line_in_grads(200, 250, [[-0.05,7], [3,-0.06]])
-
+# 动画, liness是很多lines
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
+def many_line_in_grads(n, m, liness):
+    # 创建一个函数，用于生成您的plt图
+    def create_plot(i):
+        plt.clf()  # 清除当前图形
+        line_in_grads(n, m, liness[i])
 
-# 创建一个函数，用于生成您的plt图
-def create_plot(i):
-    plt.clf()  # 清除当前图形
-    # 在这里生成您的plt图，可以使用不同的数据或参数
-    # 例如：
-    plt.plot([1, 2, 3, 4], [i, i*2, i*3, i*4])
-    plt.title(f'Frame {i}')
+    # 设置动画参数
+    fig = plt.figure()
+    ani = animation.FuncAnimation(fig, create_plot, frames=len(liness), interval=1000)
 
-# 设置动画参数
-fig = plt.figure()
-ani = animation.FuncAnimation(fig, create_plot, frames=10, interval=1000)
+    # 保存动画为文件或显示在窗口中
+    # 若要保存为文件，可以使用下面的代码：
+    # ani.save('my_animation.gif', writer='pillow')
 
-# 保存动画为文件或显示在窗口中
-# 若要保存为文件，可以使用下面的代码：
-# ani.save('my_animation.gif', writer='pillow')
+    # 若要在窗口中显示动画，可以使用下面的代码：
+    plt.show()
 
-# 若要在窗口中显示动画，可以使用下面的代码：
-plt.show()
+if __name__ == "__main__":
+    line_in_grads(200, 250, [[-0.05,7], [3,-0.06]])
+    many_line_in_grads(200, 250, [[[-0.05,7], [3,-0.06]], [[-0.05,0.04], [0.033,-0.06]]])

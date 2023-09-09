@@ -34,9 +34,9 @@ def haili_to_meter(haili):
 def diminished_angle(th):
     return arctan(tan(th) / (1 + 0.15))
 
-# 把两点式化成标准形式ax+by+1=0
+# 把两点式化成标准形式ax+by+10000=0
 def normalize(x1, y1, x2, y2):
-    return (y2-y1)/(x2*y1-x1*y2), (x1-x2)/(x2*y1-x1*y2)
+    return 10000*(y2-y1)/(x2*y1-x1*y2), 10000*(x1-x2)/(x2*y1-x1*y2)
 
 
 # 海底点的类
@@ -48,9 +48,9 @@ class point:
         # 是半径的平方!
         self.r2 = (z * tan(theta))**2
     
-    # 直线统一用ax+by+1=0
+    # 直线统一用ax+by+10000=0
     def detected_by(self, a, b):
-        return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 1) ** 2
+        return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 10000) ** 2
     
     # 看(x,y)是不是在半径范围内
     def close_enough(self, x, y):
@@ -104,27 +104,27 @@ def interpolate(d_matrix, times):
         d_matrix = tmp2 * 2
     return d_matrix
 
-# 对ax+by+1=0在[xl, xh) x [yl, yr)里采样整点
+# 对ax+by+10000=0在[xl, xh) x [yl, yr)里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
     if a == 0:
-        y = (1) / (-b)
+        y = (10000) / (-b)
         if yl <= y and y < yr:
             for x in range(xl, xr):
                 result.append((x, int(floor(y))))
     elif b == 0:
-        x = (1) / (-a)
+        x = (10000) / (-a)
         if xl <= x and x < xr:
             for y in range(yl, yr):
                 result.append((int(floor(x)), y))
     elif abs(a) >= abs(b):
         for y in range(yl, yr):
-            x = (b * y + 1) / (-a)
+            x = (b * y + 10000) / (-a)
             if xl <= x and x < xr:
                 result.append((int(floor(x)), y))
     else:
         for x in range(xl, xr):
-            y = (a * x + 1) / (-b)
+            y = (a * x + 10000) / (-b)
             if yl <= y and y < yr:
                 result.append((x, int(floor(y))))
     return result
@@ -134,28 +134,28 @@ def get_sample_points(a, b, xl, xr, yl, yr):
 def get_real_points(a, b, xl, xr, yl, yr):
     result = []
     if a == 0:
-        y = (1) / (-b)
+        y = (10000) / (-b)
         if yl <= y and y < yr:
             for x in range(xl, xr):
                 result.append((x, y))
     elif b == 0:
-        x = (1) / (-a)
+        x = (10000) / (-a)
         if xl <= x and x < xr:
             for y in range(yl, yr):
                 result.append((x, y))
     elif abs(a) >= abs(b):
         for y in range(yl, yr):
-            x = (b * y + 1) / (-a)
+            x = (b * y + 10000) / (-a)
             if xl <= x and x < xr:
                 result.append((x, y))
     else:
         for x in range(xl, xr):
-            y = (a * x + 1) / (-b)
+            y = (a * x + 10000) / (-b)
             if yl <= y and y < yr:
                 result.append((x, y))
     return result
 
-# 寻找[points]中被ax+by+1=0探测到的点
+# 寻找[points]中被ax+by+10000=0探测到的点
 def get_detected_points(points, a, b):
     result = set()
     for point in points:
@@ -163,10 +163,10 @@ def get_detected_points(points, a, b):
             result.add((point.x, point.y))
     return result
 
-# 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式
+# 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式##################################
 def get_nor(a, b, x0, y0):
     c = -a * x0 - b * y0
-    return a / c, b / c
+    return 10000* a / c, 10000* b / c
 
 # 将放缩之后的直线的方程转化为原来以米为单位的讨论上
 def get_origin_param(a, b, unit = UNIT): 
@@ -200,8 +200,8 @@ def get_eta(points, lines, xsize, ysize):
                                               max(insect_By, int(y)))
                 points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
                 eta_in_A.append(-len(points_not_overlap) / max(len(set(A_dots) & set(line_dots)), 1))
+        eta_in_A = array(eta_in_A)
         etas.append(eta_in_A)
-    etas = array(etas)
     return etas
 
 # 第四问读取表格，返回点集合(已经除以unit)
@@ -224,17 +224,42 @@ def read_excel_to_points(filename = '附件.xlsx', theta = degrees_to_radians(60
 def get_k(a, b):
     return - a / b
 
-# 返回加权和#######################################
+# 返回加权和############################################################
 def weight_sum(lst, center = 0.15):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
-    result = sum(((lst - 0.15) / 0.05) ** 2 * weights) / size
+    result = sum(((lst - center) / 0.05) ** 2 * weights) / size
     return result
 
 # 得到沿着x轴方向（即东西方向）的线与所提供直线的交点坐标
 def get_point_with_x(a, b, fix_x):
-    return fix_x, (-1 - a * fix_x) / b
+    return fix_x, (-10000 - a * fix_x) / b
 
 # 得到沿着y轴方向（即南北方向）的线与所提供直线的交点坐标
 def get_point_with_y(a, b, fix_y):
-    return (-1 - b * fix_y), fix_y
+    return (-10000 - b * fix_y) / a, fix_y
+
+
+
+# 计算一个一般式直线与线段的交点
+def cross_point(x0, y0, x1, y1, a, b):
+    u = x0 * a + y0 * b + 10000
+    v = x1 * a + y1 * b + 10000
+    if u * v < 0:
+        x = (abs(v) * x0 + abs(u) * x1) / (abs(u) + abs(v))
+        y = (abs(v) * y0 + abs(u) * y1) / (abs(u) + abs(v))
+        return (x, y)
+    else:
+        return ()
+
+# 计算一个一般式直线ax+by+1=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
+# |n _m
+def cross(n, m, a, b):
+    result = []
+    vertex = [(0,0),(0,n),(n,m),(m,0),(0,0)]
+    for i in range(4):
+        point = cross_point(vertex[i][0], vertex[i][1], vertex[i+1][0], vertex[i+1][1], a, b)
+        if point != ():
+            result.append(point)
+    if len(result) == 1: result = []
+    return result
