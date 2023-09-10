@@ -1,15 +1,31 @@
 from numpy import *
 import openpyxl
 
-UNIT = 37.04
+UNIT = 37.04    # 一个单位的长度 / meter
+
+# 海底点的类
+class point:
+    def __init__(self, x, y, z, theta):
+        self.x = x
+        self.y = y
+        self.z = z
+        
+        self.r2 = (z * tan(theta))**2 # 是半径的平方!
+    
+    # 直线统一用ax+by+10000=0
+    def detected_by(self, a, b):
+        return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 10000) ** 2
+    
+    # 看(x,y)是不是在半径范围内
+    def close_enough(self, x, y):
+        return (self.x - x)**2 + (self.y - y)**2 < self.r2
 
 # °转到弧度
 def degrees_to_radians(degrees):
     radians = degrees * pi / 180.0
     return radians
 
-# 用偏离距离, 海底夹角和航行偏角计算高度变化
-# 第一问的偏离距离相当于0
+# 用偏离距离, 海底夹角和航行偏角计算高度变化，第一问的beta相当于0
 def dh(dl, al, be):
     return dl * cos(be) * tan(al)
 
@@ -21,8 +37,7 @@ def get_width(d, th, al):
 def get_alprime(al, be):
     return arctan(tan(be) * tan(al) * cos(be))
 
-# 用深度和探测夹角得到 要扫到海底这点所需要的 
-# 与测线的水平距离
+# 用深度和探测夹角得到 要扫到海底这点所需要的与测线的水平距离
 def get_radius(d, th):
     return d * tan(th)
 
@@ -31,30 +46,14 @@ def haili_to_meter(haili):
     return haili * 1852
 
 # 变成约化角度(弧度)
+# q3 设置为 0.11
+# q4 设置为 0.20
 def diminished_angle(th):
-    return arctan((1 - 0.15)*tan(th))
+    return arctan((1 - 0.20)*tan(th))
 
-# 把两点式化成标准形式ax+by+10000=0
+# 把两点式化成标准形式 ax + by + 10000 = 0
 def normalize(x1, y1, x2, y2):
     return 10000*(y2-y1)/(x2*y1-x1*y2), 10000*(x1-x2)/(x2*y1-x1*y2)
-
-
-# 海底点的类
-class point:
-    def __init__(self, x, y, z, theta):
-        self.x = x
-        self.y = y
-        self.z = z
-        # 是半径的平方!
-        self.r2 = (z * tan(theta))**2
-    
-    # 直线统一用ax+by+10000=0
-    def detected_by(self, a, b):
-        return self.r2 * (a ** 2 + b ** 2) > (a*self.x + b*self.y + 10000) ** 2
-    
-    # 看(x,y)是不是在半径范围内
-    def close_enough(self, x, y):
-        return (self.x - x)**2 + (self.y - y)**2 < self.r2
 
 def get_depths(length, width, center_depth, alpha, unit = UNIT):
     """
@@ -95,18 +94,24 @@ def interpolate(d_matrix, times):
         # 计算相邻两行的平均值
         row_avg = (d_matrix[:-1] + d_matrix[1:]) / 2
         # 将平均值插入到相邻两行之间
-        tmp1 = vstack((d_matrix, row_avg))
-        # 计算相邻两列的平均值
-        col_avg = (tmp1[:, :-1] + tmp1[:, 1:]) / 2
-        # 将平均值插入到相邻两列之间
-        tmp2 = hstack((tmp1, col_avg))
+        midresult = d_matrix[0]
+        for i in range(len(row_avg)):
+            midresult = vstack((midresult, row_avg[i], d_matrix[i+1]))
+
+        d_matrix = midresult.T
+        # 计算相邻两行的平均值
+        row_avg = (d_matrix[:-1] + d_matrix[1:]) / 2
+        # 将平均值插入到相邻两行之间
+        midresult = d_matrix[0]
+        for i in range(len(row_avg)):
+            midresult = vstack((midresult, row_avg[i], d_matrix[i+1]))
         # 把高度按比例增加
-        d_matrix = tmp2 * 2
+        d_matrix = midresult * 2
+        d_matrix = d_matrix.T
     return d_matrix
 
 # 得到对对角线的采样, 哪条对角线由斜率决定
 def get_sample_diag(a, b, xl, xr, yl, yr):
-    
     # 采从左上到右下这条线
     if a * b > 0:
         line = normalize(xl, yr, xr, yl)
@@ -115,8 +120,7 @@ def get_sample_diag(a, b, xl, xr, yl, yr):
     
     return get_sample_points(line[0], line[1], xl, xr, yl, yr)
 
-
-# 对ax+by+10000=0在[xl, xh) x [yl, yr)里采样整点
+# 对ax + by + 10000 = 0在[xl, xh) * [yl, yr) 里采样整点
 def get_sample_points(a, b, xl, xr, yl, yr):
     result = []
     if a == 0:
@@ -142,7 +146,7 @@ def get_sample_points(a, b, xl, xr, yl, yr):
     return result
 
 
-# 对ax+by+1=0在[xl, xh) x [yl, yr)里采样准确点
+# 对ax + by + 1=0在[xl, xh) * [yl, yr)里采样准确点
 def get_real_points(a, b, xl, xr, yl, yr):
     result = []
     if a == 0:
@@ -167,7 +171,7 @@ def get_real_points(a, b, xl, xr, yl, yr):
                 result.append((x, y))
     return result
 
-# 寻找[points]中被ax+by+10000=0探测到的点
+# 寻找[points]中被ax + by + 10000 = 0探测到的点
 def get_detected_points(points, a, b):
     result = set()
     for point in points:
@@ -175,7 +179,7 @@ def get_detected_points(points, a, b):
             result.add((point.x, point.y))
     return result
 
-# 找到形如ax+by+c=0,经过(x0,y0)这条直线的标准形式
+# 找到形如ax + by + c = 0,经过(x0, y0)这条直线的标准形式
 def get_nor(a, b, x0, y0):
     c = -a * x0 - b * y0
     try:
@@ -192,34 +196,27 @@ def get_nor(a, b, x0, y0):
 def get_origin_param(a, b, unit = UNIT): 
     return a / unit, b / unit
 
-
 # 返回重叠率（相对于前一条线）
 def get_eta(points, lines, xsize, ysize):
     etas = [0]
+    sets_of_dots = [get_detected_points(points, Aa, Ab) for (Aa, Ab) in lines]
     for i, (Aa, Ab) in enumerate(lines[1:]):
         # get dots on the line
         dots = get_real_points(Aa, Ab, 0, xsize, 0, ysize)
         eta_in_A = []
-        Ba, Bb = lines[i]
-        A_dots = get_detected_points(points, Aa, Ab)
-        B_dots = get_detected_points(points, Ba, Bb)
+        A_dots = sets_of_dots[i+1]
+        B_dots = sets_of_dots[i]
+        cover = A_dots & B_dots
+
         for (x, y) in dots:
             # get points on the grid inside dot detection range
             la, lb = get_nor(-Ab, Aa, x, y)
             line_dots = get_sample_points(la, lb, 0, xsize, 0, ysize)
-            overlap = set(A_dots) & set(B_dots) & set(line_dots)
+            overlap = cover & set(line_dots)
             if len(overlap): # eta > 0
-                eta_in_A.append(len(overlap) / max(len(set(A_dots) & set(line_dots)), 1))
+                eta_in_A.append(len(overlap) / len(set(A_dots) & set(line_dots)))
             else:            # eta < 0
-                insect_Bx = int((Bb - lb) / (lb * Ba - la * Bb))
-                insect_By = int((la - Ba) / (lb * Ba - la * Bb))
-                temp_line = get_sample_points(la, lb, 
-                                              min(insect_Bx, int(x)), 
-                                              max(insect_Bx, int(x)), 
-                                              min(insect_By, int(y)), 
-                                              max(insect_By, int(y)))
-                points_not_overlap = [d for d in temp_line if d not in A_dots and d not in B_dots]
-                eta_in_A.append(-len(points_not_overlap) / max(len(set(A_dots) & set(line_dots)), 1))
+                eta_in_A.append(-0.05)
         eta_in_A = array(eta_in_A)
         etas.append(eta_in_A)
     return etas
@@ -247,13 +244,11 @@ def get_k(a, b):
     except ZeroDivisionError:
         return 10000000
 
-
-# 返回加权和############################################################
-def weight_sum(lst, center = 0.15):
+# 返回加权和
+def weight_sum(lst, center = 0.10):
     size = len(lst)
     weights = linspace(0, 1, size)  # 使用np.linspace生成等间隔的权重数组
-    result = sum(((lst - center) / 0.05) * weights) / size
-    constrain(result, 0.001)
+    result = sum((lst - center) * weights) / size
     return result
 
 def constrain(result, bound):
@@ -281,9 +276,8 @@ def cross_point(x0, y0, x1, y1, a, b):
     else:
         return ()
 
-# 计算一个一般式直线ax+by+10000=0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
-# |n _m
-def cross(n, m, a, b):
+# 计算一个一般式直线ax + by + 10000 = 0与一个靠xy正半轴的, 边长为(n, m)的长方形的交点
+def cross(n, m, a, b):  # n 为纵向大小，m为横向大小
     result = []
     vertex = [(0,0),(0,n),(m,n),(m,0),(0,0)]
     for i in range(4):
@@ -299,4 +293,3 @@ def in_length(n, m, a, b):
         return sqrt((cross_points[0][0] - cross_points[1][0]) ** 2 + (cross_points[0][1] - cross_points[1][1]) ** 2)
     else:
         return 0
-        
